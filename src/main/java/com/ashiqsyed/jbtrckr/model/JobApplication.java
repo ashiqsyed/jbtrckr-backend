@@ -1,5 +1,6 @@
 package com.ashiqsyed.jbtrckr.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -10,26 +11,32 @@ import java.util.UUID;
 @Entity
 public class JobApplication {
     @Id
-//    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
-    private UUID id = UUID.randomUUID();
+    private UUID id;
 
     private String company;
     private String status;
     private LocalDate dateApplied;
     private String title;
 
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    @JsonIgnore
+    private User user;
+
 
     public JobApplication() {
-//        this.id = UUID.randomUUID();
+
     }
 
-    public JobApplication(UUID id, String company, String status, LocalDate dateApplied, String title) {
-//        this.id = UUID.randomUUID();
+    public JobApplication(UUID id, String company, String status, LocalDate dateApplied, String title, User user) {
+
         this.company = company;
         this.status = status;
         this.dateApplied = dateApplied;
         this.title = title;
+        this.user = user;
     }
 
     public UUID getId() {
@@ -72,16 +79,24 @@ public class JobApplication {
         this.title = title;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JobApplication that = (JobApplication) o;
-        return id == that.id && Objects.equals(company, that.company) && Objects.equals(status, that.status) && Objects.equals(dateApplied, that.dateApplied) && Objects.equals(title, that.title);
+        return Objects.equals(id, that.id) && Objects.equals(company, that.company) && Objects.equals(status, that.status) && Objects.equals(dateApplied, that.dateApplied) && Objects.equals(title, that.title) && Objects.equals(user, that.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, company, status, dateApplied, title);
+        return Objects.hash(id, company, status, dateApplied, title, user);
     }
 }

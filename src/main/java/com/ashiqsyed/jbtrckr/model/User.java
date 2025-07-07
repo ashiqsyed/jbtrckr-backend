@@ -1,19 +1,24 @@
 package com.ashiqsyed.jbtrckr.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
+@Entity
+@Table(name="users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String username;
     private String password;
     private String email;
+
+    @OneToMany(mappedBy="user", cascade=CascadeType.ALL, orphanRemoval=true)
+    private Set<JobApplication> jobApplications = new HashSet<>();
 
     public User() {
 
@@ -49,16 +54,33 @@ public class User {
         this.password = password;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Set<JobApplication> getJobApplications() {
+        return jobApplications == null ? null  : new HashSet<>(jobApplications);
+    }
+
+    public void setJobApplications(Set<JobApplication> jobApplications) {
+        this.jobApplications = jobApplications;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email);
+        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(jobApplications, user.jobApplications);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, email);
+        return Objects.hash(id, username, password, email, jobApplications);
     }
 }
